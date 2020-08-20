@@ -1,6 +1,7 @@
 from PyQt5 import Qt, QtCore, QtGui, QtWidgets
 from mainwindow import Ui_MainWindow
 import pyqtgraph as pg
+import pyqtgraph.exporters
 import regex, csv, lmfit, pandas, scipy, numpy, fnmatch, sys, math
 import matplotlib.pyplot as plt
 import MTF_Module
@@ -35,6 +36,10 @@ def Run(self):
             numberOfPixels, pixelPitch, distance, xValues, yValues = MTF_Module.mtfProcessor(file)
             ui.plotArea.plot(xValues, yValues, pen=pg.mkPen(color=pg.intColor(index), width=5), name=str(numberOfPixels)+" pixels with "+str(pixelPitch)+" mm pitch at "+distance+" mm into the light spreader")
 
+def Save(self):
+    exporter = pg.exporters.ImageExporter(ui.plotArea.plotItem)
+    fileName, _filter = QtWidgets.QFileDialog.getSaveFileName(ui, 'Save Graph', "", "PNG (*.png)")
+    exporter.export(fileName)
 
 def QtInfo(self):
     msg = QtWidgets.QMessageBox()
@@ -70,6 +75,7 @@ if __name__ == "__main__":
 
     ui.selectFileButton.clicked.connect(SelectFile)
     ui.runButton.clicked.connect(Run)
+    ui.saveButton.clicked.connect(Save)
 
     ui.actionSelectFiles.triggered.connect(SelectFile)
     ui.actionQtInfo.triggered.connect(QtInfo)
