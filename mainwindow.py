@@ -44,9 +44,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.plotArea = pg.PlotWidget(self.centralWidget)
         self.plotArea.setObjectName("plotArea")
         self.plotArea.setGeometry(QtCore.QRect(750, 141, 700, 800))
-        self.fileList = QtWidgets.QListView(self.centralWidget)
+        self.fileList = QtWidgets.QListWidget(self.centralWidget)
         self.fileList.setGeometry(20, 141, 500, 800)
         self.fileList.setObjectName("fileList")
+        self.label = QtWidgets.QLabel(self.centralWidget)
+        self.label.setGeometry(QtCore.QRect(750, 961, 700, 30))
+        self.label.setObjectName("label")
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.retranslateUi(MainWindow)
@@ -54,3 +57,4 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MTF Processor"))
+        self.label.setText(_translate("MainWindow", " "))

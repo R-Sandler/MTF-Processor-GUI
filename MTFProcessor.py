@@ -9,32 +9,31 @@ import MTF_Module
 def SelectFile(self):
 
     selectedFiles, _filter = QtWidgets.QFileDialog.getOpenFileNames(ui, 'Select Files', "", "XLSX (*.xlsx)")
-
+    global fileNames
+    fileNames = []
+    ui.fileList.clear()
     if len(selectedFiles) == 0:
         ShowBox()
     else:
-        model = QtGui.QStandardItemModel()
-        ui.fileList.setModel(model)
-        #fileNames = []
         for i in selectedFiles:
             text = regex.split('/', i)
             fileNames.append(text[-1])
-            item = QtGui.QStandardItem(text[-1])
-            model.appendRow(item)
-        #print(fileNames)
+        ui.fileList.addItems(fileNames)
     
 def Run(self):
-    #print(fileNames)
+    ui.plotArea.clear()
     ui.plotArea.setXRange(0,10, padding=0)
     ui.plotArea.setYRange(0,1.25, padding=0)
     ui.plotArea.addLegend()
-    if len(fileNames) == 0:
+    if ui.fileList.count() == 0:
         ShowBox()
     else:
         for index, file in enumerate(fileNames):
-            #print("Working on file number "+str(index+1))
+            ui.label.setText("Working on file number "+str(index+1)+" of "+str(len(fileNames)))
+            ui.label.repaint()
             numberOfPixels, pixelPitch, distance, xValues, yValues = MTF_Module.mtfProcessor(file)
             ui.plotArea.plot(xValues, yValues, pen=pg.mkPen(color=pg.intColor(index), width=5), name=str(numberOfPixels)+" pixels with "+str(pixelPitch)+" mm pitch at "+distance+" mm into the light spreader")
+    ui.label.setText("Run complete")
 
 def Save(self):
     exporter = pg.exporters.ImageExporter(ui.plotArea.plotItem)
@@ -70,8 +69,6 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    global fileNames
-    fileNames = []
 
     ui.selectFileButton.clicked.connect(SelectFile)
     ui.runButton.clicked.connect(Run)
