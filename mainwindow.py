@@ -23,6 +23,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.actionSelectFiles = fileMenu.addAction("Select Files")
         self.actionExit = fileMenu.addAction("Exit")
         self.actionQtInfo = infoMenu.addAction("About Qt")
+        self.actionProgramInfo = infoMenu.addAction("About Program")
         self.selectFileButton = QtWidgets.QPushButton(self.centralWidget)
         self.selectFileButton.setGeometry(20, 61, 180, 60)
         self.selectFileButton.setDefault(False)
@@ -47,9 +48,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.fileList = QtWidgets.QListWidget(self.centralWidget)
         self.fileList.setGeometry(20, 141, 500, 800)
         self.fileList.setObjectName("fileList")
-        self.label = QtWidgets.QLabel(self.centralWidget)
-        self.label.setGeometry(QtCore.QRect(750, 961, 700, 30))
-        self.label.setObjectName("label")
+        #self.label = QtWidgets.QLabel(self.centralWidget)
+        #self.label.setGeometry(QtCore.QRect(750, 961, 700, 30))
+        #self.label.setObjectName("label")
+        self.progressBar = QtGui.QProgressBar(self.centralWidget)
+        self.progressBar.setGeometry(750, 961, 700, 30)
+        self.progressBar.setObjectName("progressBar")
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.retranslateUi(MainWindow)
@@ -57,4 +61,4 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MTF Processor"))
-        self.label.setText(_translate("MainWindow", " "))
+        #self.label.setText(_translate("MainWindow", " "))
