@@ -2,7 +2,7 @@ from PyQt5 import Qt, QtCore, QtGui, QtWidgets
 from mainwindow import Ui_MainWindow
 import pyqtgraph as pg
 import pyqtgraph.exporters
-import regex, csv, lmfit, scipy, numpy, fnmatch, sys, math
+import regex, csv, lmfit, scipy, numpy, fnmatch, sys, math, xlsxwriter
 import matplotlib.pyplot as plt
 import MTF_Module
 
@@ -21,27 +21,45 @@ def SelectFile(self):
         ui.fileList.addItems(fileNames)
     
 def Run(self):
+    global MTFData
+    MTFData = []
+    global MTFLabels
+    MTFLabels = []
     ui.plotArea.clear()
     ui.plotArea.setXRange(0,10, padding=0)
     ui.plotArea.setYRange(0,1.25, padding=0)
     ui.plotArea.addLegend()
-    if ui.fileList.count() == 0:
+    ui.plotArea.setLabel('bottom', "Spatial Frequency (lp/mm)")
+    ui.plotArea.setLabel('left', "MTF")
+    numberFiles = ui.fileList.count()
+    if numberFiles == 0:
         ShowBox()
     else:
-        ui.progressBar.setMaximum(ui.fileList.count())
+        ui.progressBar.setMaximum(numberFiles)
         for index, file in enumerate(fileNames):
-            #ui.label.setText("Working on file number "+str(index+1)+" of "+str(len(fileNames)))
-            #ui.label.repaint()
             ui.progressBar.setValue(index)
             numberOfPixels, pixelPitch, distance, xValues, yValues = MTF_Module.mtfProcessor(file)
+            MTFData.append(xValues)
+            MTFData.append(yValues)
             ui.plotArea.plot(xValues, yValues, pen=pg.mkPen(color=pg.intColor(index), width=5), name=str(numberOfPixels)+" pixels with "+str(pixelPitch)+" mm pitch at "+distance+" mm into the light spreader")
+            MTFLabels.append(str(numberOfPixels)+" pixels with "+str(pixelPitch)+" mm pitch at "+distance+" mm into the light spreader")        
         ui.progressBar.setValue(ui.fileList.count())
-    #ui.label.setText("Run complete")
+
 
 def Save(self):
     exporter = pg.exporters.ImageExporter(ui.plotArea.plotItem)
     fileName, _filter = QtWidgets.QFileDialog.getSaveFileName(ui, 'Save Graph', "", "PNG (*.png)")
     exporter.export(fileName)
+    dataFileName = fileName[:len(fileName) - 4] + ".xlsx"
+    workbook = xlsxwriter.Workbook(dataFileName)
+    worksheet = workbook.add_worksheet()
+    row = 0
+    for col, data in enumerate(MTFLabels):
+        worksheet.write(row, col*2, data)
+    row = 1
+    for col, data in enumerate(MTFData):
+        worksheet.write_column(row, col, data)
+    workbook.close()
 
 def QtInfo(self):
     msg = QtWidgets.QMessageBox()
